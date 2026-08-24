@@ -1,0 +1,33 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.6",
+	"FriendlyName": "ZzActionAngelscript",
+	"Description": "ZzAction from anglescript binds",
+	"Category": "Gameplay",
+	"CreatedBy": "zz studio",
+	"CreatedByURL": "zzstd@outlook.com",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ZzActionAngelscript",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ZzAction",
+			"Enabled": true
+		},
+		{
+			"Name": "Angelscript",
+			"Enabled": true
+		}
+	]
+}

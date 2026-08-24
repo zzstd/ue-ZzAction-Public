@@ -1,0 +1,33 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "0.6",
+	"FriendlyName": "ZzActionRewind",
+	"Description": "Provide rewind debugging for ZzAction",
+	"Category": "Other",
+	"CreatedBy": "zz studio",
+	"CreatedByURL": "zzstd@outlook.com",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "ZzActionRewind",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ZzAction",
+			"Enabled": true
+		},
+		{
+			"Name": "ZzRewind",
+			"Enabled": true
+		}
+	]
+}
