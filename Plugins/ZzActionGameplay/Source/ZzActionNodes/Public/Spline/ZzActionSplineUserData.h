@@ -8,16 +8,18 @@
 #include "Components/SplineComponent.h"
 #include "ZzActionSplineUserData.generated.h"
 
-
 class USplineComponent;
 class UZzActionBlueprint;
-
+class AZzActionSplineActor;
 
 UCLASS()
 class ZZACTIONNODES_API UZzActionSplineUserData : public UZzActionBlueprintUserData
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	FTransform RelativeTransform;
+	
 	UPROPERTY(EditAnywhere, Category = "Spline")
 	FName SplineName;
 	
@@ -46,7 +48,7 @@ public:
 	void CopyTo(USplineComponent* Spline) const;
 	
 	virtual void OnActionConstructed(UZzActionInstance* InActionInstance) override;
-	
+
 	static FName GetSplineDataName(FName SplineName);
 	
 	static UZzActionSplineUserData* GetSplineUserData(const UZzActionBlueprint* Asset, FName SplineName);
@@ -54,13 +56,15 @@ public:
 	virtual void OnPreviewEnter(UWorld* InWorld, TArray<AActor*>& OutActors) override;
 	virtual void OnPreviewExit(UWorld* InWorld) override;
 
-	mutable bool bHasCopyScope = false;
+	void HandlePreviewSplineChanged();
 	
 	UPROPERTY(DuplicateTransient)
-	TObjectPtr<class AZzActionNiagaraSplineActor> PreviewSplineActor;
+	TObjectPtr<AZzActionSplineActor> PreviewSplineActor;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Spline", DuplicateTransient)
 	TObjectPtr<USplineComponent> PreviewSplineComponent;
+protected:
+	mutable bool bPreviewSplineModifyScoped = false;
 	
-	void HandlePreviewSplineChanged();
+	virtual AZzActionSplineActor* SpawnSplineActor(UWorld* InWorld, const FTransform& SpawnTF, bool bApplyPoint) const;
 }; 

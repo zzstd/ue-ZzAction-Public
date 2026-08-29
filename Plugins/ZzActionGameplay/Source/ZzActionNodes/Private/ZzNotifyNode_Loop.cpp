@@ -44,7 +44,7 @@ void UZzNotifyNode_LoopBase::OnEnd(bool Abort)
 
 FLinearColor UZzNotifyNode_LoopBase::GetNotifyColor_Implementation() const
 {
-	return FLinearColor(0.153, 0.153, 0.361, 1.0f);
+	return FLinearColor(0.153f, 0.153f, 0.361f, 1.0f);
 }
 
 void UZzNotifyNode_LoopBase::OnBeginLoop_Implementation()

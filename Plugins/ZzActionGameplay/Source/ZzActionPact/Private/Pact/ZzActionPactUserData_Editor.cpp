@@ -115,7 +115,7 @@ void UZzActionPactUserData::Draw(class FPrimitiveDrawInterface* PDI, const class
 			ZZ::Action::Helper::DrawCoordinateSystem(PDI, WorldEnd, 5, 10.0f, 2, true, 200);
 			ZZ::Action::Helper::DrawCoordinateSystem(PDI, WorldTarget, 5, 10.0f, 2, true, 200);
 
-			constexpr float DrawTimeStep = 1.0 / 30.0;
+			constexpr float DrawTimeStep = 1.0f / 30.0f;
 			FVector p0 = WorldStart.GetLocation();
 			for (float t = WarpBeginTime + DrawTimeStep; t < WarpEndTime; t += DrawTimeStep)
 			{

@@ -49,7 +49,7 @@ public:
 		TObjectInfo<UObject> CallObject;
 	};
 	
-	int32 LastRecordFrame;
+	int32 CurrentRecordFrame = 0;
 	TMap<int32, TArray<FCheckFailedInfo>> CheckFailedActions;
 };
 

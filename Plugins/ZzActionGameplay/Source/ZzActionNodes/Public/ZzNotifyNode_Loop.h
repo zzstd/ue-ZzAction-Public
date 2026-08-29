@@ -20,10 +20,10 @@ public:
 	virtual void OnEnd(bool Abort) override;
 	virtual FLinearColor GetNotifyColor_Implementation() const override;
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, Category = "Loop")
 	void OnBeginLoop();
 	
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, Category = "Loop")
 	void OnStopLoop(bool Abort);
 	
 #if WITH_EDITOR
@@ -51,7 +51,7 @@ class ZZACTIONNODES_API UZzNotifyNode_SimpleLoop : public UZzNotifyNode_LoopBase
 public:
 	virtual bool ShouldLoop() const override;
 	
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Loop")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SimpleLoop")
 	bool BP_ShouldLoop() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SimpleLoop")

@@ -4,8 +4,6 @@
 
 #include "DetailWidgetRow.h"
 #include "IDetailChildrenBuilder.h"
-#include "Editor/ComponentVisualizers/Public/SplineDetailsProvider.h"
-#include "Spline/ZzActionSplineUserData.h"
 #include "Subsystems/EditorActorSubsystem.h"
 
 void FZzActionSplineUserDataCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> PropertyHandle, FDetailWidgetRow& HeaderRow,
@@ -32,6 +30,18 @@ void FZzActionSplineUserDataCustomization::CustomizeChildren(TSharedRef<IPropert
 	[
 		SNew(SHorizontalBox)
 		
+#if !UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.VAlign(VAlign_Center)
+			.Text(INVTEXT("Save Spline Data"))
+			.OnClicked(this, &FZzActionSplineUserDataCustomization::HandleSaveSplineData)
+		]
+#endif
+		
+#if UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
 		[
@@ -40,6 +50,7 @@ void FZzActionSplineUserDataCustomization::CustomizeChildren(TSharedRef<IPropert
 			.Text(INVTEXT("Select all points"))
 			.OnClicked(this, &FZzActionSplineUserDataCustomization::HandleSelectAllSplinePoints)
 		]
+#endif
 
 		+ SHorizontalBox::Slot()
 		.AutoWidth()
@@ -111,6 +122,16 @@ bool FZzActionSplineUserDataCustomization::HasSelectedSpline() const
 	return GetLevelSelectedSplineComponent() != nullptr;
 }
 
+FReply FZzActionSplineUserDataCustomization::HandleSaveSplineData()
+{
+	if (auto SplineUserData = GetSplineUserData())
+	{
+		SplineUserData->HandlePreviewSplineChanged();
+	}
+	
+	return FReply::Handled();
+}
+
 FReply FZzActionSplineUserDataCustomization::ExportToLevel()
 {
 	if (auto SplineUserData = GetSplineUserData())
@@ -133,15 +154,14 @@ FReply FZzActionSplineUserDataCustomization::ImportFromLevel()
 		{
 			SplineUserData->Modify();
 			SplineUserData->CopyFrom(SplineComp);
-			if (SplineUserData->PreviewSplineComponent)
-			{
-				SplineUserData->CopyTo(SplineUserData->PreviewSplineComponent);
-			}
 		}
 	}
 
 	return FReply::Handled();
 }
+
+#if UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
+#include "Editor/ComponentVisualizers/Public/SplineDetailsProvider.h"
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS // disable use ISplineDetailsProvider warning
 FReply FZzActionSplineUserDataCustomization::HandleSelectAllSplinePoints()
@@ -174,3 +194,5 @@ ISplineDetailsProvider* FZzActionSplineUserDataCustomization::GetSplineDetailsPr
 	return nullptr;
 }
 PRAGMA_ENABLE_DEPRECATION_WARNINGS
+
+#endif

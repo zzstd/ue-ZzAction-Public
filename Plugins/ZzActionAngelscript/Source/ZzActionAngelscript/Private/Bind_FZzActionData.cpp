@@ -76,4 +76,6 @@ AS_FORCE_LINK const FAngelscriptBinds::FBind Bind_Bind_FZzActionData(FAngelscrip
 	FZzActionData_.Method("bool GetFloatAsBool(FName Name, bool NotFoundValue = false) const", METHOD_TRIVIAL(FZzActionData, GetFloatAsBool));
 	FZzActionData_.Method("void SetFloatAsBool(FName Name, bool NewValue)", METHOD_TRIVIAL(FZzActionData, SetFloatAsBool));
 	FZzActionData_.Method("void Append(const FZzActionData& OtherData)", METHOD_TRIVIAL(FZzActionData, Append));
+	
+	FZzActionData_.Method("void CopyNamedValuesTo(FZzActionData& TargetRef, const TArray<FName>& Names) const", METHOD_TRIVIAL(FZzActionData, CopyNamedValuesTo));
 });

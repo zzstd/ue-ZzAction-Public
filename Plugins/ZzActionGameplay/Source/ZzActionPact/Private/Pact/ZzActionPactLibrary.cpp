@@ -7,7 +7,6 @@
 #include "ZzActionData.h"
 #include "ZzActionInstance.h"
 #include "ZzActionLinkData.h"
-#include "Pact/ZzActionPactHook.h"
 
 namespace ZZ::Private
 {

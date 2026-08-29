@@ -58,7 +58,7 @@ void FZzNiagaraParam::CopyFrom(UNiagaraSystem* Niagara, const FNiagaraVariable& 
 		Type = static_cast<int32>(EType::Vec2);
 		if (const void* ActualData = Niagara->GetExposedParameters().GetParameterData(Var))
 		{
-			FMemory::Memcpy(&Vec2, ActualData, sizeof(FVector2D));
+			Vec2 = FVector2D(*static_cast<const FVector2f*>(ActualData));
 		}
 	}
 	else if (Var.GetType() == FNiagaraTypeDefinition::GetVec3Def())
@@ -66,7 +66,7 @@ void FZzNiagaraParam::CopyFrom(UNiagaraSystem* Niagara, const FNiagaraVariable& 
 		Type = static_cast<int32>(EType::Vec3);
 		if (const void* ActualData = Niagara->GetExposedParameters().GetParameterData(Var))
 		{
-			FMemory::Memcpy(&Vec3, ActualData, sizeof(FVector));
+			Vec3 = FVector(*static_cast<const FVector3f*>(ActualData));
 		}
 	}
 	else if (Var.GetType() == FNiagaraTypeDefinition::GetColorDef())
@@ -80,9 +80,9 @@ void FZzNiagaraParam::CopyFrom(UNiagaraSystem* Niagara, const FNiagaraVariable& 
 	else if (Var.GetType() == FNiagaraTypeDefinition::GetPositionDef())
 	{
 		Type = static_cast<int32>(EType::Vec3);
-		if (const void* ActualData = Niagara->GetExposedParameters().GetPositionParameterValue(Var.GetName()))
+		if (const FVector* ActualData = Niagara->GetExposedParameters().GetPositionParameterValue(Var.GetName()))
 		{
-			FMemory::Memcpy(&Vec3, ActualData, sizeof(FVector));
+			Vec3 = *ActualData;
 		}
 	}
 	else

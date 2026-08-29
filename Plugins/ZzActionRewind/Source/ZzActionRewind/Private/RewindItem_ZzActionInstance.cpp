@@ -89,7 +89,7 @@ void FRewindItem_ZzActionInstance::OnRecordActionInst(int32 Frame, const FAction
 		auto p = SharedInstMap.Find(Inst->ActionUniqueID);
 		if (ensure(p != nullptr))
 		{
-			if (p->RecordStartFrame <= 0)
+			if (p->RecordStartFrame < 0)
 			{
 				p->RecordStartFrame = Frame;
 			}

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/SplineComponent.h"
+#include "Spline/ZzActionSplineUserData.h"
+#include "Misc/EngineVersionComparison.h"
 
 
 class UZzActionSplineUserData;
@@ -28,11 +30,15 @@ private:
 	
 	bool HasSelectedSpline() const;
 	
+	FReply HandleSaveSplineData();
+	
 	FReply ExportToLevel();
 	
 	FReply ImportFromLevel();
 	
+#if UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
 	FReply HandleSelectAllSplinePoints();
-
+	
 	static class ISplineDetailsProvider* GetSplineDetailsProvider(const USplineComponent* SplineComponent);
+#endif
 };

@@ -22,7 +22,7 @@ struct ZZACTIONNODES_API FZzActionLinkData
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="LinkData")
 	TObjectPtr<UZzActionLinkNode> LinkNode;
 	
 	static void Push(struct FZzActionData& InActionDataRef, UZzActionLinkNode* InLinkNode, const UZzActionInstance* InActionInstance);

@@ -7,11 +7,12 @@
 #include "ZzActionComponent.h"
 #include "ZzActionInstance.h"
 #include "Components/SplineComponent.h"
-#include "Spline/ZzActionNiagaraSplineActor.h"
+#include "Spline/ZzActionSplineActor.h"
+#include "Misc/EngineVersionComparison.h"
 
 
 void UZzActionSplineUserData::CopyFrom(const USplineComponent* Spline)
-{    
+{
 	if (!Spline)
 	{
 		return;
@@ -32,6 +33,12 @@ void UZzActionSplineUserData::CopyFrom(const USplineComponent* Spline)
 	bStationaryEndpoints = Spline->bStationaryEndpoints;
 #if WITH_EDITOR
 	bAllowDiscontinuousSpline = Spline->bAllowDiscontinuousSpline;
+	
+	if (PreviewSplineComponent && PreviewSplineComponent != Spline)
+	{
+		TGuardValue bGuard(bPreviewSplineModifyScoped, true);
+		CopyTo(PreviewSplineComponent);
+	}
 #endif
 }
 
@@ -41,7 +48,6 @@ void UZzActionSplineUserData::CopyTo(USplineComponent* Spline) const
 	{
 		return;
 	}
-	bHasCopyScope = true;
 	
 #if WITH_EDITOR
 	Spline->bAllowDiscontinuousSpline = bAllowDiscontinuousSpline;
@@ -59,8 +65,6 @@ void UZzActionSplineUserData::CopyTo(USplineComponent* Spline) const
 	
 	Spline->UpdateSpline();
 	Spline->MarkRenderStateDirty();
-	
-	bHasCopyScope = false;
 }
 
 void UZzActionSplineUserData::OnActionConstructed(UZzActionInstance* InActionInstance)
@@ -70,14 +74,11 @@ void UZzActionSplineUserData::OnActionConstructed(UZzActionInstance* InActionIns
 		return;
 	}
 
-	auto SplineActor = InActionInstance->GetWorld()->SpawnActor<AZzActionNiagaraSplineActor>();
-	CopyTo(SplineActor->Spline);
+	FTransform ActorTF = InActionInstance->GetActionComponent()->GetOwner()->GetActorTransform();
+	ActorTF *= FTransform(FVector(0, 0, -90));
+	
+	auto SplineActor = SpawnSplineActor(InActionInstance->GetWorld(), ActorTF, true);
 	SplineActor->AddActionInst(InActionInstance);
-	{
-		FTransform SpawnTF = InActionInstance->GetActionComponent()->GetOwner()->GetActorTransform();
-		SpawnTF.SetLocation(SpawnTF.GetLocation() + FVector(0, 0, -90));
-		SplineActor->SetActorTransform(SpawnTF);
-	}
 	
 	auto SplineActorName = GetSplineDataName(SplineName);
 	InActionInstance->ActionData.Objects.Add(SplineActorName, SplineActor);
@@ -109,15 +110,17 @@ UZzActionSplineUserData* UZzActionSplineUserData::GetSplineUserData(const UZzAct
 
 void UZzActionSplineUserData::OnPreviewEnter(UWorld* InWorld, TArray<AActor*>& OutActors)
 {
-	PreviewSplineActor = InWorld->SpawnActor<AZzActionNiagaraSplineActor>();
+	TGuardValue bGuard(bPreviewSplineModifyScoped, true);
+	
+	const bool bValidPoints = Points.Num() > 1;
+	PreviewSplineActor = SpawnSplineActor(InWorld, FTransform::Identity, bValidPoints);
 	PreviewSplineComponent = PreviewSplineActor->Spline;
-	if (Points.Num() > 1)
-	{
-		CopyTo(PreviewSplineComponent);
-	}
+	
+#if UE_VERSION_NEWER_THAN_OR_EQUAL(5, 7, 0)
 PRAGMA_DISABLE_EXPERIMENTAL_WARNINGS
 	PreviewSplineComponent->GetOnSplineChanged().AddUObject(this, &UZzActionSplineUserData::HandlePreviewSplineChanged);
 PRAGMA_ENABLE_BUFFER_OVERRUN_WARNING
+#endif
 	OutActors.Add(PreviewSplineActor);
 }
 
@@ -130,9 +133,24 @@ void UZzActionSplineUserData::OnPreviewExit(UWorld* InWorld)
 	}
 }
 
+AZzActionSplineActor* UZzActionSplineUserData::SpawnSplineActor(UWorld* InWorld, const FTransform& SpawnTF, bool bApplyPoint) const
+{
+	check(InWorld);
+	
+	auto SplineActor = InWorld->SpawnActor<AZzActionSplineActor>();
+	SplineActor->SetActorTransform(RelativeTransform * SpawnTF);
+	
+	if (bApplyPoint)
+	{
+		CopyTo(SplineActor->Spline);
+	}
+	
+	return SplineActor;
+}
+
 void UZzActionSplineUserData::HandlePreviewSplineChanged()
 {
-	if (bHasCopyScope)
+	if (bPreviewSplineModifyScoped)
 	{
 		return;
 	}

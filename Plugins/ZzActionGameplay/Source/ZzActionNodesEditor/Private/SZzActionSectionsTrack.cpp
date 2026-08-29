@@ -28,8 +28,8 @@ void SZzActionSectionLabel::Construct(const FArguments& InArgs, const TSharedRef
 		.BorderBackgroundColor_Lambda([this]()
 		{
 			return bHasSelect
-				? FLinearColor(0.0, 0.2, 0.6, 1.0f)
-				: FLinearColor(0.153, 0.153, 0.361, 1.0f);
+				? FLinearColor(0.0f, 0.2f, 0.6f, 1.0f)
+				: FLinearColor(0.153f, 0.153f, 0.361f, 1.0f);
 		})
 		[
 			SNew(SHorizontalBox)
@@ -168,8 +168,8 @@ FText SZzActionSectionLabel::GetSectionText() const
 			Line.bActive = true;
 			Line.Thickness = 1;
 			Line.Color = bHasSelect
-					? FLinearColor(0.0, 0.2, 0.6, 1.0f)
-					: FLinearColor(0.153, 0.153, 0.361, 1.0f);
+					? FLinearColor(0.0f, 0.2f, 0.6f, 1.0f)
+					: FLinearColor(0.153f, 0.153f, 0.361f, 1.0f);
 			Line.Time = SectData.Time;
 		}
 		return FText::FromName(SectData.Name);

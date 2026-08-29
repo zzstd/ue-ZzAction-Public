@@ -76,26 +76,29 @@ bool UZzNotifyNode_NiagaraEffect::IsPoint() const
 #if WITH_EDITOR
 namespace ZZ
 {
-void SetNiagaraDesiredAge(UNiagaraComponent* NiagaraComponent, float DesiredAge)
+namespace
 {
-	ENiagaraAgeUpdateMode AgeUpdateMode = ENiagaraAgeUpdateMode::DesiredAge;
-	bool bAllowScalability = false;
-
-	NiagaraComponent->SetForceSolo(true);
-	NiagaraComponent->SetAgeUpdateMode(AgeUpdateMode);
-	NiagaraComponent->SetAllowScalability(bAllowScalability);
-
+	void SetNiagaraDesiredAge(UNiagaraComponent* NiagaraComponent, float DesiredAge)
 	{
-		NiagaraComponent->SetSeekDelta(ZZ::TimelineUtils::GetDeltaTime());
-		NiagaraComponent->SetLockDesiredAgeDeltaTimeToSeekDelta(false);
-	}
+		ENiagaraAgeUpdateMode AgeUpdateMode = ENiagaraAgeUpdateMode::DesiredAge;
+		bool bAllowScalability = false;
 
-	bool bRenderingEnabled = true;
-	NiagaraComponent->SetRenderingEnabled(bRenderingEnabled);
+		NiagaraComponent->SetForceSolo(true);
+		NiagaraComponent->SetAgeUpdateMode(AgeUpdateMode);
+		NiagaraComponent->SetAllowScalability(bAllowScalability);
 
-	if (DesiredAge >= 0)
-	{
-		NiagaraComponent->SetDesiredAge(DesiredAge);
+		{
+			NiagaraComponent->SetSeekDelta(ZZ::TimelineUtils::GetDeltaTime());
+			NiagaraComponent->SetLockDesiredAgeDeltaTimeToSeekDelta(false);
+		}
+
+		bool bRenderingEnabled = true;
+		NiagaraComponent->SetRenderingEnabled(bRenderingEnabled);
+
+		if (DesiredAge >= 0)
+		{
+			NiagaraComponent->SetDesiredAge(DesiredAge);
+		}
 	}
 }
 }
@@ -127,16 +130,10 @@ void UZzNotifyNode_NiagaraEffect::OnPreviewEditorTick(float NewPos, bool bPlayin
 		bool bShouldRespawnFx = !bEditorPreview;
 		bShouldRespawnFx |= !bFxAgeInRange;
 		bShouldRespawnFx |= EditorPreviewFxComp->GetFXSystemAsset() != Template;
+		
+		bShouldRespawnFx |= !EditorPreviewCachedSpawnOffset.Equals(MyOffset);
 		bShouldRespawnFx |= (EditorPreviewFxComp->GetAttachParent() != nullptr) != bAttached;
-		bShouldRespawnFx |= !bAttached && !EditorPreviewCachedSpawnOffset.Equals(MyOffset);
-		if (bAttached)
-		{
-			bShouldRespawnFx |= EditorPreviewFxComp->GetAttachSocketName() != SocketName;
-		}
-		else
-		{
-			bShouldRespawnFx |= !EditorPreviewCachedSpawnOffset.Equals(MyOffset);
-		}
+		bShouldRespawnFx |= EditorPreviewFxComp->GetAttachSocketName() != SocketName;
 
 		if (bShouldRespawnFx)
 		{
@@ -145,7 +142,7 @@ void UZzNotifyNode_NiagaraEffect::OnPreviewEditorTick(float NewPos, bool bPlayin
 		}
 	}
 	
-	if (bFxAgeInRange && bEditorPreview)
+	if (bFxAgeInRange && bEditorPreview) 
 	{
 		if (!EditorPreviewFxComp)
 		{
@@ -165,8 +162,28 @@ void UZzNotifyNode_NiagaraEffect::OnPreviewEditorTick(float NewPos, bool bPlayin
 					SystemInstanceController->Reset(FNiagaraSystemInstance::EResetMode::ResetAll);
 				}
 			}
-			
-			ZZ::SetNiagaraDesiredAge(EditorPreviewFxComp, NewPos - GetBeginTime());
+
+			{
+				ENiagaraAgeUpdateMode AgeUpdateMode = ENiagaraAgeUpdateMode::DesiredAge;
+				bool bAllowScalability = false;
+
+				EditorPreviewFxComp->SetForceSolo(true);
+				EditorPreviewFxComp->SetAgeUpdateMode(AgeUpdateMode);
+				EditorPreviewFxComp->SetAllowScalability(bAllowScalability);
+
+				{
+					EditorPreviewFxComp->SetSeekDelta(ZZ::TimelineUtils::GetDeltaTime());
+					EditorPreviewFxComp->SetLockDesiredAgeDeltaTimeToSeekDelta(false);
+				}
+
+				EditorPreviewFxComp->SetRenderingEnabled(true);
+
+				const float DesiredAge = NewPos - GetBeginTime();
+				if (DesiredAge >= 0)
+				{
+					EditorPreviewFxComp->SetDesiredAge(DesiredAge);
+				}
+			}
 		}
 	}
 }
@@ -193,40 +210,33 @@ void UZzNotifyNode_NiagaraEffect::PostEditChangeProperty(struct FPropertyChanged
 
 UNiagaraComponent* UZzNotifyNode_NiagaraEffect::SpawnEffect(USkeletalMeshComponent* MeshComp) const
 {
-	UNiagaraComponent* ReturnComp = nullptr;
 	
-	auto MyOffset = GetSpawnEffectOffset();
-	if (ValidateParameters(MeshComp))
+	if (!ValidateParameters(MeshComp))
 	{
-		if (bAttached)
-		{
-			ReturnComp = UNiagaraFunctionLibrary::SpawnSystemAttached(
-				Template
-				, MeshComp, SocketName
-				, MyOffset.GetLocation()
-				, MyOffset.GetRotation().Rotator()
-				, EAttachLocation::KeepRelativeOffset
-				, !bDestroyAtEnd);
-		}
-		else
-		{
-			const FTransform MeshTransform = MeshComp->GetSocketTransform(SocketName);
-			ReturnComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				MeshComp, 
-				Template, 
-				MeshTransform.TransformPosition(MyOffset.GetLocation()), 
-				(MeshTransform.GetRotation() * MyOffset.GetRotation()).Rotator(), 
-				FVector(1.0f),true);
-		}
-		
-		if (ReturnComp != nullptr)
-		{
-			ReturnComp->SetUsingAbsoluteScale(bAbsoluteScale);
-			ReturnComp->SetRelativeScale3D_Direct(MyOffset.GetScale3D());
-		}
+		return nullptr;
 	}
 	
-	return ReturnComp;
+	const FTransform SpawnRelativeTF = GetSpawnEffectOffset();
+	
+	UNiagaraComponent* NewFXComp;
+	if (bAttached)
+	{
+		NewFXComp = UNiagaraFunctionLibrary::SpawnSystemAttached(Template, MeshComp, SocketName, SpawnRelativeTF.GetLocation(), SpawnRelativeTF.GetRotation().Rotator(), EAttachLocation::KeepRelativeOffset, !bDestroyAtEnd);
+	}
+	else
+	{
+		const FTransform MeshTransform = MeshComp->GetSocketTransform(SocketName, RTS_World);
+		const FTransform SpawnTF = SpawnRelativeTF * MeshTransform;
+		NewFXComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(MeshComp, Template, SpawnTF.GetLocation(), SpawnTF.GetRotation().Rotator(), FVector::OneVector, true);
+	}
+	
+	if (NewFXComp)
+	{
+		NewFXComp->SetUsingAbsoluteScale(bAbsoluteScale);
+		NewFXComp->SetRelativeScale3D_Direct(SpawnRelativeTF.GetScale3D());
+	}
+	
+	return NewFXComp;
 }
 
 FTransform UZzNotifyNode_NiagaraEffect::GetSpawnEffectOffset_Implementation() const

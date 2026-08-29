@@ -35,7 +35,7 @@ struct ZZACTIONNODES_API FZzNotifyNode_TraceOnHitsParam
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TraceOnHitsParam")
 	TArray<FHitResult> Hits;
 };
 

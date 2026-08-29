@@ -16,7 +16,6 @@ FRewindItem_ZzActionComponent::FRewindItem_ZzActionComponent()
 {
 	bPaintFrame = true;
 	bPaintItem = true;
-	LastRecordFrame = 0;
 }
 
 void FRewindItem_ZzActionComponent::OnSetup(UObject* Owner)
@@ -61,7 +60,7 @@ void FRewindItem_ZzActionComponent::OnRecord(int32 Frame)
 		}
 	}
 
-	LastRecordFrame = Frame;
+	CurrentRecordFrame = Frame + 1;
 }
 
 TSharedRef<SWidget> FRewindItem_ZzActionComponent::GenerateInspector(int32 Frame)
@@ -85,8 +84,6 @@ TSharedRef<SWidget> FRewindItem_ZzActionComponent::GenerateInspector(int32 Frame
 					InspectorWidget->GetRoot()->Begin(FString::Printf(TEXT("[%d]"), Index++), Result.ActionAsset)
 					, Info, Result.ActionAsset.WeakObject.Get());
 			}
-			
-			Index++;
 		}
 	}
 	
@@ -210,8 +207,8 @@ void FRewindItem_ZzActionComponent::OnActionEnded(UZzActionInstance* InActionIns
 
 void FRewindItem_ZzActionComponent::OnActionCheckFailed(UZzActionBlueprint* InActionInst, UObject* InCallObject)
 {
-	auto& Ref = CheckFailedActions.FindOrAdd(LastRecordFrame).AddDefaulted_GetRef();
-	Ref.RecordFrame = LastRecordFrame;
+	auto& Ref = CheckFailedActions.FindOrAdd(CurrentRecordFrame).AddDefaulted_GetRef();
+	Ref.RecordFrame = CurrentRecordFrame;
 	Ref.ActionAsset = InActionInst;
 	Ref.CallObject = InCallObject;
 }

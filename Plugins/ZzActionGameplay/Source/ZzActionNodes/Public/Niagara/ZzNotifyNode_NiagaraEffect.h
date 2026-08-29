@@ -65,7 +65,7 @@ private:
 	mutable FTransform EditorPreviewCachedSpawnOffset;
 #endif
 protected:
-	UPROPERTY(BlueprintReadOnly, Transient)
+	UPROPERTY(BlueprintReadOnly, Transient, Category = "NiagaraSystem")
 	TObjectPtr<UNiagaraComponent> FXComponent;
 	
 	virtual UNiagaraComponent* SpawnEffect(USkeletalMeshComponent* MeshComp) const;

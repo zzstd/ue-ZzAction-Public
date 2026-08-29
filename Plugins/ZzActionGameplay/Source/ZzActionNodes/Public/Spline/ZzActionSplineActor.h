@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "ZzActionNiagaraSplineActor.generated.h"
+#include "ZzActionSplineActor.generated.h"
 
 class UZzActionInstance;
 class UNiagaraComponent;
 
 UCLASS(Hidden)
-class ZZACTIONNODES_API AZzActionNiagaraSplineActor : public AActor
+class ZZACTIONNODES_API AZzActionSplineActor : public AActor
 {
 	GENERATED_BODY()
 public:
-	AZzActionNiagaraSplineActor();
+	AZzActionSplineActor();
 	
 	UPROPERTY()
 	class USplineComponent* Spline;

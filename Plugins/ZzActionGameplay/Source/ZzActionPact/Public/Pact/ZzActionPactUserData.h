@@ -17,16 +17,16 @@ struct ZZACTIONPACT_API FZzActionPactLinkInfo
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="LinkInfo")
 	FVector LocationOffset = FVector::ZeroVector;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="LinkInfo")
 	FRotator RotationOffset = FRotator::ZeroRotator;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="LinkInfo")
 	bool bHasMotionWarpNode = false;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="LinkInfo")
 	FGuid LinkGUID;
 	
 	UZzActionLinkNode* GetLinkNode(const UZzActionTimeline* MainTimeline) const;

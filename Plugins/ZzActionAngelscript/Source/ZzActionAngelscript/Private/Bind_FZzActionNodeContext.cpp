@@ -19,7 +19,7 @@ AS_FORCE_LINK const FAngelscriptBinds::FBind Bind_FZzActionNodeContext(FAngelscr
 	FZzActionNodeContext_.Method("UZzActionTimeline GetTimeline() const", METHOD_TRIVIAL(FZzActionNodeContext, GetTimeline));
 	FZzActionNodeContext_.Method("UZzActionInstance GetActionInstance() const", METHOD_TRIVIAL(FZzActionNodeContext, GetActionInstance));
 	FZzActionNodeContext_.Method("UZzActionComponent GetActionComponent() const", METHOD_TRIVIAL(FZzActionNodeContext, GetActionComponent));
-	FZzActionNodeContext_.Method("UZzActionAnimRuntime GetAnimRuntime(bool bCreateIfNone = true) const", METHOD_TRIVIAL(FZzActionNodeContext, GetAnimRuntime));
+	FZzActionNodeContext_.Method("UZzActionAnimRuntime GetAnimRuntime(bool bCreateIfNone = false) const", METHOD_TRIVIAL(FZzActionNodeContext, GetAnimRuntime));
 	FZzActionNodeContext_.Method("double GetCurrentTime() const", METHOD_TRIVIAL(FZzActionNodeContext, GetCurrentTime));
 	FZzActionNodeContext_.Method("AActor GetOwnedActor() const", METHOD_TRIVIAL(FZzActionNodeContext, GetOwnedActor));
 	FZzActionNodeContext_.Method("int32 GetNodeUniqueID() const", METHOD_TRIVIAL(FZzActionNodeContext, GetNodeUniqueID));

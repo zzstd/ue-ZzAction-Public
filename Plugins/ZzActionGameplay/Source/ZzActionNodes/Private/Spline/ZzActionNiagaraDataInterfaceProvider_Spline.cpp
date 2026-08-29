@@ -7,7 +7,7 @@
 #include "ZzActionBlueprint.h"
 #include "ZzActionInstance.h"
 #include "Node/ZzActionNode.h"
-#include "Spline/ZzActionNiagaraSplineActor.h"
+#include "Spline/ZzActionSplineActor.h"
 #include "Spline/ZzActionSplineUserData.h"
 
 
@@ -39,7 +39,7 @@ void UZzActionNiagaraDataInterfaceProvider_Spline::CopyTo(UNiagaraComponent* Com
 					else
 					{
 						auto SplineActorName =UZzActionSplineUserData::GetSplineDataName(SplineName);
-						if (auto SplineActor = Node->GetNodeContext().GetActionData().GetObject<AZzActionNiagaraSplineActor>(SplineActorName))
+						if (auto SplineActor = Node->GetNodeContext().GetActionData().GetObject<AZzActionSplineActor>(SplineActorName))
 						{
 							SplineActor->AddNiagaraInst(Comp);
 							SplineDI->SoftSourceActor = SplineActor;
